@@ -1,0 +1,28 @@
+--The Task--
+
+You need to develop and deploy a an app that writes a new file to S3 on every execution.
+
+You are free to choose any of the following programming languages: Python, Java, NodeJS
+or Golang.
+
+These files need to be maintained only for 24h.
+
+The content of the file is not important, but add the date and time as prefix for your file name.
+
+The name of the buckets should be the following ones for QA and Staging respectively: qa-
+FIRSTNAME-LASTNAME-stormreply-platform-challenge and staging-FIRSTNAMELASTNAME-
+stormreply-platform-challenge.
+
+The app will be running as a docker container in a Kubernetes cluster every 5 minutes.
+
+There is a Namespace for QA and a different Namespace for Staging in the cluster. You
+don’t need to provide tests but you need to be sure the app will work.
+
+--Deployment--
+
+You can use your own personal AWS account (S3 service is covered in the free tier). In case
+you don’t have an AWS account, you can use localstack as a mock for having a S3 bucket
+locally and running your app.
+
+Along with the function code you need to provide Terraform resources to provision the S3
+bucket (and its associated resources),
