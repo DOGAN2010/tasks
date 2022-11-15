@@ -176,12 +176,13 @@ resource "kubernetes_namespace" "qa" {
       name = "qa"
     }
 
-    # labels = {
-    #   mylabel = "label-value"
-    # }
+    labels = {
+      mylabel = "label-value"
+    }
 
     name = "qa-namespace"
   }
+  depends_on = [aws_instance.vorker]
 }
 
 resource "kubernetes_namespace" "staging" {
@@ -190,27 +191,24 @@ resource "kubernetes_namespace" "staging" {
       name = "staging"
     }
 
-    # labels = {
-    #   mylabel = "label-value"
-    # }
+    labels = {
+      mylabel = "label-value"
+    }
 
     name = "staging-namespace"
   }
+  depends_on = [aws_instance.vorker]
 }
 
 
 resource "aws_s3_bucket" "bucket-qa" {
-  bucket = "qa-FIRSTNAME-LASTNAME-stormreply-platform-challenge"
+  bucket = "qa-firstname-lastname-stormreply-platform-challenge"
 }
 
 resource "aws_s3_bucket" "bucket-staging" {
-  bucket = "staging-FIRSTNAMELASTNAME-stormreply-platform-challenge"
+  bucket = "staging-firstname-lastname-stormreply-platform-challenge"
 }
 
-# resource "aws_s3_bucket_acl" "bucket_acl" {
-#   bucket = aws_s3_bucket.bucket.id
-#   acl    = "private"
-# }
 resource "aws_s3_bucket_lifecycle_configuration" "bucket-config-qa" {
   bucket = aws_s3_bucket.bucket-qa.bucket
 
@@ -265,8 +263,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket-config-staging" {
 
 }
 
-
 resource "kubernetes_cron_job" "task" {
+  depends_on = [aws_instance.vorker]
   metadata {
     name = "task"
   }
@@ -286,11 +284,8 @@ resource "kubernetes_cron_job" "task" {
           spec {
             container {
               name    = "hello"
-              
-              ##  DOCKERHUB İMAGE CREATE ETTİKTEN SONRA DÜZENLE ????
-              ## depends_on: ekleme ??
-              image   = "busybox" 
-              # command = ["/bin/sh", "-c", "date; echo Hello from the Kubernetes cluster"]
+
+              image   = "dogan2010/task:v1" 
             }
           }
         }
@@ -298,52 +293,3 @@ resource "kubernetes_cron_job" "task" {
     }
   }
 }
-
-
-
-# resource "aws_s3_bucket" "versioning_bucket" {
-#   bucket = "my-versioning-bucket"
-# }
-
-# resource "aws_s3_bucket_acl" "versioning_bucket_acl" {
-#   bucket = aws_s3_bucket.versioning_bucket.id
-#   acl    = "private"
-# }
-
-# resource "aws_s3_bucket_versioning" "versioning" {
-#   bucket = aws_s3_bucket.versioning_bucket.id
-#   versioning_configuration {
-#     status = "Enabled"
-#   }
-# }
-
-# resource "aws_s3_bucket_lifecycle_configuration" "versioning-bucket-config" {
-#   # Must have bucket versioning enabled first
-#   depends_on = [aws_s3_bucket_versioning.versioning]
-
-#   bucket = aws_s3_bucket.versioning_bucket.id
-
-#   rule {
-#     id = "config"
-
-#     filter {
-#       prefix = "config/"
-#     }
-
-#     noncurrent_version_expiration {
-#       noncurrent_days = 90
-#     }
-
-#     noncurrent_version_transition {
-#       noncurrent_days = 30
-#       storage_class   = "STANDARD_IA"
-#     }
-
-#     noncurrent_version_transition {
-#       noncurrent_days = 60
-#       storage_class   = "GLACIER"
-#     }
-
-#     status = "Enabled"
-#   }
-#}
